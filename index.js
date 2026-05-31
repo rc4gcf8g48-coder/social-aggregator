@@ -5,6 +5,8 @@ const fetch = require('node-fetch');
 const app = express();
 app.use(cors());
 app.use(express.json());
+const path = require('path');
+app.use(express.static(path.join(__dirname)));
 
 const YOUTUBE_API_KEY = 'AIzaSyD_C-9kMK-H0BJbRMRT4efsSOGhEReTC9U';
 
