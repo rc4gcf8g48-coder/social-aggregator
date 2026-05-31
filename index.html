@@ -181,7 +181,7 @@
     document.getElementById('stats').innerHTML = '';
 
     try {
-      const response = await fetch(`http://localhost:3000/search?q=${encodeURIComponent(query)}`);
+      const response = await fetch(`https://social-aggregator-production.up.railway.app/search?q=${encodeURIComponent(query)}`)
       const posts = await response.json();
 
       if (!posts.length) {
