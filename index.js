@@ -1,14 +1,16 @@
 const express = require('express');
 const cors = require('cors');
 const fetch = require('node-fetch');
+const path = require('path');
 
 const app = express();
 app.use(cors());
 app.use(express.json());
-const path = require('path');
 app.use(express.static(path.join(__dirname)));
 
 const YOUTUBE_API_KEY = 'AIzaSyD_C-9kMK-H0BJbRMRT4efsSOGhEReTC9U';
+const FB_APP_ID = '1494346312175079';
+const FB_APP_SECRET = '36f8ac439f884b5942f3eac633f173bf';
 
 app.get('/search', async (req, res) => {
   const query = req.query.q;
@@ -51,6 +53,30 @@ app.get('/search', async (req, res) => {
       author: post.data.author, score: post.data.score, comments: post.data.num_comments
     }));
   } catch(e) { console.log('Reddit грешка:', e.message); }
+
+  try {
+    const fbToken = `${FB_APP_ID}|${FB_APP_SECRET}`;
+    const fbRes = await fetch(`https://graph.facebook.com/v18.0/pages/search?q=${encodeURIComponent(query)}&fields=name,posts{message,created_time,permalink_url}&access_token=${fbToken}`);
+    const fbData = await fbRes.json();
+    if (fbData.data) {
+      fbData.data.forEach(page => {
+        if (page.posts && page.posts.data) {
+          page.posts.data.forEach(post => {
+            if (post.message) {
+              results.push({
+                platform: 'Facebook',
+                title: post.message.substring(0, 150),
+                url: post.permalink_url,
+                date: new Date(post.created_time).toLocaleDateString(),
+                author: page.name,
+                score: 0, comments: 0
+              });
+            }
+          });
+        }
+      });
+    }
+  } catch(e) { console.log('Facebook грешка:', e.message); }
 
   res.json(results);
 });
