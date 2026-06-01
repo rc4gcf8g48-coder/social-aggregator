@@ -4,277 +4,378 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Unify — Social Search</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    
+
     :root {
-      --bg: #0a0a0f;
-      --card: #13131a;
-      --border: #1e1e2e;
-      --accent: #7c3aed;
-      --accent2: #06b6d4;
-      --text: #e2e8f0;
-      --muted: #64748b;
-      --hn: #ff6314;
-      --yt: #ff0000;
-      --reddit: #ff4500;
-      --fb: #1877f2;
-      --wiki: #3366cc;
+      --bg: #080810;
+      --card: #0e0e1a;
+      --border: rgba(255,255,255,0.06);
+      --text: #f0f0ff;
+      --muted: #6b7280;
+      --purple: #8b5cf6;
+      --cyan: #22d3ee;
+      --pink: #ec4899;
     }
 
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-family: 'Inter', sans-serif;
       background: var(--bg);
       color: var(--text);
       min-height: 100vh;
+      overflow-x: hidden;
     }
+
+    /* BACKGROUND BLOBS */
+    .blob {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.15;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .blob-1 { width: 500px; height: 500px; background: #8b5cf6; top: -200px; left: -100px; }
+    .blob-2 { width: 400px; height: 400px; background: #22d3ee; bottom: -100px; right: -100px; }
+    .blob-3 { width: 300px; height: 300px; background: #ec4899; top: 40%; left: 60%; }
 
     /* HEADER */
     header {
-      padding: 60px 20px 40px;
-      text-align: center;
       position: relative;
-      overflow: hidden;
+      z-index: 1;
+      padding: 80px 20px 50px;
+      text-align: center;
     }
 
-    header::before {
-      content: '';
-      position: absolute;
-      top: -100px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 600px;
-      height: 300px;
-      background: radial-gradient(ellipse, rgba(124,58,237,0.3) 0%, transparent 70%);
-      pointer-events: none;
+    .logo-wrap {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
     }
 
-    .logo {
-      font-size: 2.8rem;
+    .logo-icon {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, #8b5cf6, #22d3ee);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+    }
+
+    .logo-text {
+      font-size: 2.4rem;
       font-weight: 800;
-      background: linear-gradient(135deg, #7c3aed, #06b6d4);
+      background: linear-gradient(135deg, #c4b5fd, #67e8f9, #f9a8d4);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      margin-bottom: 8px;
       letter-spacing: -1px;
     }
 
     .tagline {
       color: var(--muted);
-      font-size: 1rem;
-      margin-bottom: 40px;
+      font-size: 0.95rem;
+      margin-bottom: 48px;
+      font-weight: 400;
     }
 
     /* SEARCH */
     .search-wrap {
-      max-width: 640px;
+      max-width: 600px;
       margin: 0 auto;
-      position: relative;
     }
 
-    .search-inner {
+    .search-box {
       display: flex;
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 16px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 20px;
       overflow: hidden;
-      transition: border-color 0.2s;
+      backdrop-filter: blur(20px);
+      transition: all 0.3s;
     }
 
-    .search-inner:focus-within {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 3px rgba(124,58,237,0.15);
+    .search-box:focus-within {
+      border-color: rgba(139,92,246,0.6);
+      box-shadow: 0 0 0 4px rgba(139,92,246,0.1), 0 20px 60px rgba(139,92,246,0.15);
     }
 
-    .search-inner input {
+    .search-box input {
       flex: 1;
-      padding: 18px 24px;
+      padding: 20px 24px;
       background: transparent;
       border: none;
       color: var(--text);
       font-size: 1rem;
+      font-family: 'Inter', sans-serif;
       outline: none;
     }
 
-    .search-inner input::placeholder { color: var(--muted); }
+    .search-box input::placeholder { color: var(--muted); }
 
-    .search-inner button {
-      padding: 12px 28px;
-      margin: 6px;
-      background: linear-gradient(135deg, #7c3aed, #06b6d4);
+    .search-btn {
+      padding: 10px 24px;
+      margin: 8px;
+      background: linear-gradient(135deg, #8b5cf6, #22d3ee);
       border: none;
-      border-radius: 10px;
+      border-radius: 14px;
       color: white;
       font-weight: 600;
-      font-size: 0.95rem;
+      font-size: 0.9rem;
+      font-family: 'Inter', sans-serif;
       cursor: pointer;
-      transition: opacity 0.2s, transform 0.1s;
+      transition: all 0.2s;
+      white-space: nowrap;
     }
 
-    .search-inner button:hover { opacity: 0.9; transform: scale(1.02); }
-    .search-inner button:active { transform: scale(0.98); }
+    .search-btn:hover { opacity: 0.9; transform: scale(1.03); }
 
     /* FILTERS */
     .filters {
       display: flex;
       gap: 8px;
       justify-content: center;
-      margin-top: 16px;
+      margin-top: 20px;
       flex-wrap: wrap;
     }
 
     .filter-btn {
-      padding: 6px 14px;
-      border-radius: 20px;
-      border: 1px solid var(--border);
-      background: transparent;
+      padding: 7px 16px;
+      border-radius: 30px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.03);
       color: var(--muted);
-      font-size: 0.8rem;
+      font-size: 0.78rem;
+      font-weight: 500;
+      font-family: 'Inter', sans-serif;
       cursor: pointer;
       transition: all 0.2s;
     }
 
-    .filter-btn:hover, .filter-btn.active {
-      border-color: var(--accent);
-      color: var(--text);
-      background: rgba(124,58,237,0.1);
+    .filter-btn:hover { border-color: var(--purple); color: var(--text); }
+    .filter-btn.active {
+      background: rgba(139,92,246,0.15);
+      border-color: var(--purple);
+      color: #c4b5fd;
     }
 
-    /* MAIN */
+    /* CONTAINER */
     .container {
-      max-width: 760px;
-      margin: 40px auto;
-      padding: 0 20px 60px;
+      position: relative;
+      z-index: 1;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 40px 20px 80px;
     }
 
-    .stats-bar {
+    /* STATS */
+    .stats {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 24px;
+      margin-bottom: 28px;
+      padding: 0 4px;
+    }
+
+    .stats-left {
       color: var(--muted);
-      font-size: 0.85rem;
+      font-size: 0.83rem;
     }
 
-    .platform-counts {
+    .stats-left strong { color: var(--text); }
+
+    .platform-pills {
       display: flex;
-      gap: 12px;
+      gap: 8px;
+      flex-wrap: wrap;
     }
 
-    .platform-count {
+    .pill {
       display: flex;
       align-items: center;
-      gap: 4px;
+      gap: 5px;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      border: 1px solid transparent;
     }
 
-    .dot {
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
+    .pill-dot { width: 5px; height: 5px; border-radius: 50%; }
+
+    /* MASONRY GRID */
+    .grid {
+      columns: 3;
+      column-gap: 16px;
     }
 
-    /* CARDS */
-    .post-card {
+    @media (max-width: 900px) { .grid { columns: 2; } }
+    @media (max-width: 560px) { .grid { columns: 1; } }
+
+    /* CARD */
+    .card {
+      break-inside: avoid;
       background: var(--card);
       border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 20px;
-      margin-bottom: 12px;
-      transition: all 0.2s;
-      cursor: pointer;
-    }
-
-    .post-card:hover {
-      border-color: rgba(124,58,237,0.4);
-      transform: translateY(-2px);
-      box-shadow: 0 8px 32px rgba(0,0,0,0.3);
-    }
-
-    .card-top {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 12px;
-    }
-
-    .badge {
-      padding: 3px 10px;
       border-radius: 20px;
-      font-size: 0.7rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
+      overflow: hidden;
+      margin-bottom: 16px;
+      transition: all 0.3s;
+      cursor: pointer;
+      position: relative;
     }
 
-    .badge-hn { background: rgba(255,99,20,0.15); color: var(--hn); }
-    .badge-youtube { background: rgba(255,0,0,0.15); color: var(--yt); }
-    .badge-reddit { background: rgba(255,69,0,0.15); color: var(--reddit); }
-    .badge-facebook { background: rgba(24,119,242,0.15); color: var(--fb); }
-    .badge-wikipedia { background: rgba(51,102,204,0.15); color: var(--wiki); }
-
-    .card-meta {
-      display: flex;
-      gap: 12px;
-      color: var(--muted);
-      font-size: 0.78rem;
-      margin-left: auto;
+    .card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 20px;
+      background: linear-gradient(135deg, rgba(139,92,246,0.05), transparent);
+      opacity: 0;
+      transition: opacity 0.3s;
     }
 
-    .card-title {
-      font-size: 0.95rem;
-      font-weight: 500;
-      line-height: 1.5;
-      margin-bottom: 12px;
-      color: var(--text);
+    .card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(139,92,246,0.3);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.4), 0 0 0 1px rgba(139,92,246,0.1);
     }
 
-    .card-title a {
-      color: inherit;
-      text-decoration: none;
-    }
-
-    .card-title a:hover { color: #a78bfa; }
+    .card:hover::before { opacity: 1; }
 
     .card-thumb {
       width: 100%;
-      border-radius: 10px;
-      margin-bottom: 12px;
-      max-height: 220px;
+      display: block;
       object-fit: cover;
     }
 
-    .card-footer {
-      display: flex;
-      gap: 16px;
-      color: var(--muted);
-      font-size: 0.8rem;
-    }
+    .card-body { padding: 16px; }
 
-    .card-footer span {
+    .card-header {
       display: flex;
       align-items: center;
-      gap: 4px;
+      justify-content: space-between;
+      margin-bottom: 10px;
     }
+
+    .badge {
+      padding: 3px 9px;
+      border-radius: 20px;
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    .card-date { color: var(--muted); font-size: 0.72rem; }
+
+    .card-title {
+      font-size: 0.88rem;
+      font-weight: 500;
+      line-height: 1.55;
+      color: var(--text);
+      margin-bottom: 12px;
+    }
+
+    .card-title a { color: inherit; text-decoration: none; }
+    .card-title a:hover { color: #c4b5fd; }
+
+    .card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .card-author {
+      font-size: 0.75rem;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .card-stats {
+      display: flex;
+      gap: 10px;
+      font-size: 0.72rem;
+      color: var(--muted);
+    }
+
+    /* PLATFORM COLORS */
+    .badge-hackernews { background: rgba(255,99,20,0.15); color: #fb923c; }
+    .badge-youtube { background: rgba(255,0,0,0.15); color: #f87171; }
+    .badge-reddit { background: rgba(255,69,0,0.15); color: #fb923c; }
+    .badge-facebook { background: rgba(24,119,242,0.15); color: #60a5fa; }
+
+    .pill-hackernews { background: rgba(255,99,20,0.1); color: #fb923c; border-color: rgba(255,99,20,0.2); }
+    .pill-youtube { background: rgba(255,0,0,0.1); color: #f87171; border-color: rgba(255,0,0,0.2); }
+    .pill-reddit { background: rgba(255,69,0,0.1); color: #fb923c; border-color: rgba(255,69,0,0.2); }
+    .pill-facebook { background: rgba(24,119,242,0.1); color: #60a5fa; border-color: rgba(24,119,242,0.2); }
 
     /* LOADING */
     .loading {
       text-align: center;
-      padding: 80px 20px;
+      padding: 100px 20px;
     }
 
-    .pulse-ring {
-      width: 48px;
-      height: 48px;
+    .loader {
+      display: inline-flex;
+      gap: 6px;
+      margin-bottom: 20px;
+    }
+
+    .loader span {
+      width: 8px;
+      height: 8px;
       border-radius: 50%;
-      border: 3px solid var(--border);
-      border-top-color: var(--accent);
-      animation: spin 0.8s linear infinite;
-      margin: 0 auto 16px;
+      background: var(--purple);
+      animation: bounce 1.2s infinite;
     }
 
-    @keyframes spin { to { transform: rotate(360deg); } }
+    .loader span:nth-child(2) { animation-delay: 0.2s; background: var(--cyan); }
+    .loader span:nth-child(3) { animation-delay: 0.4s; background: var(--pink); }
+
+    @keyframes bounce {
+      0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+      30% { transform: translateY(-12px); opacity: 1; }
+    }
 
     .loading p { color: var(--muted); font-size: 0.9rem; }
+
+    /* HERO */
+    .hero {
+      text-align: center;
+      padding: 60px 20px;
+    }
+
+    .hero p { color: var(--muted); margin-bottom: 32px; }
+
+    .hero-grid {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .hero-chip {
+      padding: 8px 16px;
+      border-radius: 30px;
+      border: 1px solid rgba(255,255,255,0.07);
+      background: rgba(255,255,255,0.03);
+      font-size: 0.82rem;
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .hero-chip:hover {
+      border-color: var(--purple);
+      color: var(--text);
+      background: rgba(139,92,246,0.08);
+    }
 
     /* EMPTY */
     .empty {
@@ -282,68 +383,47 @@
       padding: 80px 20px;
       color: var(--muted);
     }
-
-    .empty-icon { font-size: 3rem; margin-bottom: 12px; }
-
-    /* HERO */
-    .hero {
-      text-align: center;
-      padding: 60px 20px;
-      color: var(--muted);
-    }
-
-    .hero-platforms {
-      display: flex;
-      justify-content: center;
-      gap: 20px;
-      margin-top: 30px;
-      flex-wrap: wrap;
-    }
-
-    .hero-platform {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 0.85rem;
-      color: var(--muted);
-    }
-
-    @media (max-width: 600px) {
-      .logo { font-size: 2rem; }
-      .card-meta { display: none; }
-    }
   </style>
 </head>
 <body>
 
+<div class="blob blob-1"></div>
+<div class="blob blob-2"></div>
+<div class="blob blob-3"></div>
+
 <header>
-  <div class="logo">✦ Unify</div>
+  <div class="logo-wrap">
+    <div class="logo-icon">✦</div>
+    <span class="logo-text">Unify</span>
+  </div>
   <p class="tagline">Търси в социалните мрежи на едно място</p>
+
   <div class="search-wrap">
-    <div class="search-inner">
-      <input type="text" id="searchInput" placeholder="Потърси човек, тема, събитие..." autocomplete="off" />
-      <button onclick="search()">Търси</button>
+    <div class="search-box">
+      <input type="text" id="searchInput" placeholder="Elon Musk, AI, Bitcoin, SpaceX..." autocomplete="off" />
+      <button class="search-btn" onclick="search()">Търси →</button>
     </div>
     <div class="filters" id="filters" style="display:none">
-      <button class="filter-btn active" onclick="filterBy('all', this)">Всички</button>
-      <button class="filter-btn" onclick="filterBy('HackerNews', this)">HackerNews</button>
-      <button class="filter-btn" onclick="filterBy('YouTube', this)">YouTube</button>
-      <button class="filter-btn" onclick="filterBy('Reddit', this)">Reddit</button>
-      <button class="filter-btn" onclick="filterBy('Facebook', this)">Facebook</button>
+      <button class="filter-btn active" onclick="filterBy('all',this)">✦ Всички</button>
+      <button class="filter-btn" onclick="filterBy('HackerNews',this)">🟠 HackerNews</button>
+      <button class="filter-btn" onclick="filterBy('YouTube',this)">🔴 YouTube</button>
+      <button class="filter-btn" onclick="filterBy('Reddit',this)">🟤 Reddit</button>
+      <button class="filter-btn" onclick="filterBy('Facebook',this)">🔵 Facebook</button>
     </div>
   </div>
 </header>
 
 <div class="container">
-  <div id="statsBar" class="stats-bar" style="display:none"></div>
+  <div id="stats" class="stats" style="display:none"></div>
   <div id="results">
     <div class="hero">
-      <p>Въведи търсене за да намериш постове от всички платформи</p>
-      <div class="hero-platforms">
-        <span class="hero-platform">🟠 HackerNews</span>
-        <span class="hero-platform">🔴 YouTube</span>
-        <span class="hero-platform">🟤 Reddit</span>
-        <span class="hero-platform">🔵 Facebook</span>
+      <p>Въведи търсене и намери постове от всички платформи наведнъж</p>
+      <div class="hero-grid">
+        <span class="hero-chip" onclick="quickSearch('Elon Musk')">🚀 Elon Musk</span>
+        <span class="hero-chip" onclick="quickSearch('Artificial Intelligence')">🤖 AI</span>
+        <span class="hero-chip" onclick="quickSearch('Bitcoin')">₿ Bitcoin</span>
+        <span class="hero-chip" onclick="quickSearch('SpaceX')">🛸 SpaceX</span>
+        <span class="hero-chip" onclick="quickSearch('Tesla')">⚡ Tesla</span>
       </div>
     </div>
   </div>
@@ -351,11 +431,15 @@
 
 <script>
   let allPosts = [];
-  let currentFilter = 'all';
 
   document.getElementById('searchInput').addEventListener('keypress', e => {
     if (e.key === 'Enter') search();
   });
+
+  function quickSearch(q) {
+    document.getElementById('searchInput').value = q;
+    search();
+  }
 
   async function search() {
     const query = document.getElementById('searchInput').value.trim();
@@ -363,37 +447,31 @@
 
     document.getElementById('results').innerHTML = `
       <div class="loading">
-        <div class="pulse-ring"></div>
+        <div class="loader"><span></span><span></span><span></span></div>
         <p>Търсене в социалните мрежи...</p>
       </div>`;
-    document.getElementById('statsBar').style.display = 'none';
+    document.getElementById('stats').style.display = 'none';
     document.getElementById('filters').style.display = 'none';
 
     try {
-      const API = window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost'
+      const API = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
         ? 'http://localhost:3000'
         : 'https://social-aggregator-production.up.railway.app';
 
-      const response = await fetch(`${API}/search?q=${encodeURIComponent(query)}`);
-      allPosts = await response.json();
+      const res = await fetch(`${API}/search?q=${encodeURIComponent(query)}`);
+      allPosts = await res.json();
 
       document.getElementById('filters').style.display = 'flex';
-      currentFilter = 'all';
       document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
       document.querySelector('.filter-btn').classList.add('active');
       renderPosts(allPosts, query);
 
-    } catch (error) {
-      document.getElementById('results').innerHTML = `
-        <div class="empty">
-          <div class="empty-icon">⚠️</div>
-          <p>Грешка при свързване със сървъра</p>
-        </div>`;
+    } catch(e) {
+      document.getElementById('results').innerHTML = `<div class="empty">⚠️ Грешка при свързване</div>`;
     }
   }
 
   function filterBy(platform, btn) {
-    currentFilter = platform;
     document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
     const filtered = platform === 'all' ? allPosts : allPosts.filter(p => p.platform === platform);
@@ -402,53 +480,53 @@
 
   function renderPosts(posts, query) {
     if (!posts.length) {
-      document.getElementById('results').innerHTML = `
-        <div class="empty">
-          <div class="empty-icon">🔍</div>
-          <p>Няма намерени резултати</p>
-        </div>`;
+      document.getElementById('results').innerHTML = `<div class="empty">🔍 Няма намерени резултати</div>`;
       return;
     }
 
     const counts = {};
-    allPosts.forEach(p => counts[p.platform] = (counts[p.platform] || 0) + 1);
-    
-    document.getElementById('statsBar').style.display = 'flex';
-    document.getElementById('statsBar').innerHTML = `
-      <span>${allPosts.length} резултата${query ? ` за "<strong>${query}</strong>"` : ''}</span>
-      <div class="platform-counts">
-        ${Object.entries(counts).map(([p, c]) => `
-          <span class="platform-count">
-            <span class="dot" style="background:${platformColor(p)}"></span>
+    allPosts.forEach(p => counts[p.platform] = (counts[p.platform]||0) + 1);
+
+    document.getElementById('stats').style.display = 'flex';
+    document.getElementById('stats').innerHTML = `
+      <div class="stats-left">${allPosts.length} резултата${query ? ` за <strong>${query}</strong>` : ''}</div>
+      <div class="platform-pills">
+        ${Object.entries(counts).map(([p,c]) => `
+          <span class="pill pill-${p.toLowerCase()}">
+            <span class="pill-dot" style="background:${pColor(p)}"></span>
             ${c} ${p}
           </span>`).join('')}
       </div>`;
 
-    document.getElementById('results').innerHTML = posts.map(post => `
-      <div class="post-card" onclick="window.open('${post.url}', '_blank')">
-        <div class="card-top">
-          <span class="badge badge-${post.platform.toLowerCase()}">${post.platform}</span>
-          <div class="card-meta">
-            ${post.author ? `<span>👤 ${post.author}</span>` : ''}
-            ${post.date ? `<span>📅 ${post.date}</span>` : ''}
+    document.getElementById('results').innerHTML = `
+      <div class="grid">
+        ${posts.map(post => `
+          <div class="card" onclick="window.open('${post.url}','_blank')">
+            ${post.thumbnail ? `<img class="card-thumb" src="${post.thumbnail}" loading="lazy">` : ''}
+            <div class="card-body">
+              <div class="card-header">
+                <span class="badge badge-${post.platform.toLowerCase()}">${post.platform}</span>
+                ${post.date ? `<span class="card-date">${post.date}</span>` : ''}
+              </div>
+              <div class="card-title">
+                <a href="${post.url}" target="_blank" onclick="event.stopPropagation()">${post.title}</a>
+              </div>
+              <div class="card-footer">
+                <span class="card-author">👤 ${post.author || 'Unknown'}</span>
+                <div class="card-stats">
+                  ${post.score ? `<span>⬆️ ${post.score}</span>` : ''}
+                  ${post.comments ? `<span>💬 ${post.comments}</span>` : ''}
+                </div>
+              </div>
+            </div>
           </div>
-        </div>
-        ${post.thumbnail ? `<img class="card-thumb" src="${post.thumbnail}" alt="">` : ''}
-        <div class="card-title"><a href="${post.url}" target="_blank" onclick="event.stopPropagation()">${post.title}</a></div>
-        ${post.score || post.comments ? `
-        <div class="card-footer">
-          ${post.score ? `<span>⬆️ ${post.score}</span>` : ''}
-          ${post.comments ? `<span>💬 ${post.comments}</span>` : ''}
-        </div>` : ''}
-      </div>
-    `).join('');
+        `).join('')}
+      </div>`;
   }
 
-  function platformColor(p) {
-    const colors = { HackerNews: '#ff6314', YouTube: '#ff0000', Reddit: '#ff4500', Facebook: '#1877f2', Wikipedia: '#3366cc' };
-    return colors[p] || '#7c3aed';
+  function pColor(p) {
+    return { HackerNews:'#fb923c', YouTube:'#f87171', Reddit:'#fb923c', Facebook:'#60a5fa' }[p] || '#a78bfa';
   }
 </script>
-
 </body>
 </html>
